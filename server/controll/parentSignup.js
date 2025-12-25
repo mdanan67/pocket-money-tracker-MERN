@@ -1,13 +1,14 @@
 import { Parent } from "../models/Auth.js";
-const parentsSignup = async (req, res) => {
+export const parentsSignup = async (req, res) => {
   const { name, email, password, phone } = req.body;
   const parent = await Parent.findOne({ email });
   if (parent) {
     return res.json({
       success: "false",
-      message: "use already have an account",
+      message: " already have an account on this mail",
     });
   }
+
   const newParents = new Parent({
     name,
     email,
@@ -17,7 +18,10 @@ const parentsSignup = async (req, res) => {
 
   await newParents.save();
 
-  return res.json({ success: true, message: "sucess fully signup" });
+  return res.json({
+    success: true,
+    message: "You have signed up successfully!",
+  });
 };
 // parent login function
 export const loginParent = async (req, res) => {
@@ -31,4 +35,4 @@ export const loginParent = async (req, res) => {
     return res.json({ success: true, message: "user not found" });
   } catch (error) {}
 };
-export { parentsSignup };
+// export { parentsSignup };

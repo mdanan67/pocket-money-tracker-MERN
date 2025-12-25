@@ -3,6 +3,7 @@ import { useState } from "react";
 import Parents from "./Parents";
 import Navbar from "@/componont/Navbar";
 import SignUpForm from "@/componont/SignUpForm";
+import Hero from "@/componont/Hero";
 
 const Homes = () => {
   const [toggle, setToggle] = useState(false);
@@ -12,6 +13,7 @@ const Homes = () => {
         <SignUpForm setToggle={setToggle} toggle={toggle}></SignUpForm>
       )}
       <Navbar setToggle={setToggle}></Navbar>
+      <Hero></Hero>
     </div>
   );
 };

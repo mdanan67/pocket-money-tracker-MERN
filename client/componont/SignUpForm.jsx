@@ -1,6 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
+import { ToastContainer, toast } from "react-toastify";
+
+import axios from "axios";
+
 import {
   FaUser,
   FaEnvelope,
@@ -18,7 +22,6 @@ const SignUpForm = ({ setToggle, toggle }) => {
     email: "",
     phone: "",
     password: "",
-    agreeToTerms: false,
   });
   const toggleHandler = () => {
     setToggle(!toggle);
@@ -34,10 +37,38 @@ const SignUpForm = ({ setToggle, toggle }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const [successFullyAdd, setsuccessFullyAdd] = useState(false);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
+    try {
+      const parentDataInserToDatabase = await axios.post(
+        "http://localhost:4000/signup",
+        formData
+      );
+      const responsedata = parentDataInserToDatabase.data;
+
+      if (responsedata.success === true) {
+        toast(`${responsedata.message}`);
+        setsuccessFullyAdd(true);
+      } else {
+        toast(`${responsedata.message}`);
+      }
+
+      console.log("Form Submitted:", responsedata);
+    } catch (error) {
+      console.log("data not inserted", formData);
+    }
   };
+
+  useEffect(() => {
+    if (successFullyAdd) {
+      const timer = setTimeout(() => {
+        setToggle(false);
+        setsuccessFullyAdd(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [successFullyAdd]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
@@ -63,7 +94,7 @@ const SignUpForm = ({ setToggle, toggle }) => {
               {/* Username */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Username
+                  Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -71,8 +102,8 @@ const SignUpForm = ({ setToggle, toggle }) => {
                   </div>
                   <input
                     type="text"
-                    name="username"
-                    value={formData.username}
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
                     className="pl-10 w-full text-black px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
                     placeholder="Enter username"
@@ -80,7 +111,7 @@ const SignUpForm = ({ setToggle, toggle }) => {
                   />
                 </div>
               </div>
-
+              {/* email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email Address
@@ -100,7 +131,7 @@ const SignUpForm = ({ setToggle, toggle }) => {
                   />
                 </div>
               </div>
-
+              {/* password */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Password
@@ -147,14 +178,11 @@ const SignUpForm = ({ setToggle, toggle }) => {
                   />
                 </div>
               </div>
-
               {/* Terms Checkbox */}
               <div className="flex items-start">
                 <input
                   type="checkbox"
                   name="agreeToTerms"
-                  checked={formData.agreeToTerms}
-                  onChange={handleChange}
                   className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   required
                 />
@@ -173,10 +201,11 @@ const SignUpForm = ({ setToggle, toggle }) => {
 
             <button
               type="submit"
-              className="w-full mt-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg shadow-md hover:opacity-90 transition-all"
+              className="w-full mt-6 py-3 bg-gradient-to-r cursor-pointer from-blue-500 to-purple-600 text-white font-semibold rounded-lg shadow-md hover:opacity-90 transition-all"
             >
               Create Account
             </button>
+            <ToastContainer />
 
             {/* Social Logins (Using the other imports) */}
             <div className="mt-6">
@@ -195,7 +224,7 @@ const SignUpForm = ({ setToggle, toggle }) => {
                 </button>
                 <button
                   type="button"
-                  className="flex text-black items-center justify-center gap-2 py-2 border rounded-lg hover:bg-gray-50 transition"
+                  className="flex text-red-400 items-center justify-center gap-2 py-2 border rounded-lg hover:bg-gray-50 transition"
                 >
                   <FaGithub /> GitHub
                 </button>
